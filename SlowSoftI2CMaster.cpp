@@ -2,6 +2,11 @@
 
 #include <SlowSoftI2CMaster.h>
 
+//use this setting for I2C without resistors
+#define INPUT_TYPE INPUT_PULLUP
+//use this setting for standard I2C
+//#define INPUT_TYPE INPUT
+
 SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl) {
   _sda = sda;
   _scl = scl;
@@ -11,8 +16,8 @@ SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl) {
 // Returns false if SDA or SCL are low, which probably means 
 // a I2C bus lockup or that the lines are not pulled up.
 bool SlowSoftI2CMaster::i2c_init(void) {
-  pinMode(_sda, INPUT);
-  pinMode(_scl, INPUT);
+  pinMode(_sda, INPUT_TYPE);
+  pinMode(_scl, INPUT_TYPE);
   if (digitalRead(_sda) == LOW || digitalRead(_scl) == LOW) return false;
   pinMode(_sda, OUTPUT);
   digitalWrite(_sda, HIGH);
@@ -63,7 +68,7 @@ bool SlowSoftI2CMaster::i2c_write(uint8_t value) {
     digitalWrite(_scl, LOW);
   }
   // get Ack or Nak
-  pinMode(_sda, INPUT);
+  pinMode(_sda, INPUT_TYPE);
   digitalWrite(_sda, HIGH);
   digitalWrite(_scl, HIGH);
   uint8_t rtn = digitalRead(_sda);
@@ -78,7 +83,7 @@ bool SlowSoftI2CMaster::i2c_write(uint8_t value) {
 uint8_t SlowSoftI2CMaster::i2c_read(bool last) {
   uint8_t b = 0;
   digitalWrite(_sda, HIGH);
-  pinMode(_sda, INPUT);
+  pinMode(_sda, INPUT_TYPE);
   for (uint8_t i = 0; i < 8; i++) {
     b <<= 1;
     delayMicroseconds(DELAY);
